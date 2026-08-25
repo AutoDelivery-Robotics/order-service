@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  order-service:
+    build:
+      context: ../../
+      dockerfile: backend/order-service/Dockerfile
+    ports:
+      - "3001:3000"
+    depends_on:
+      - order-db
+    environment:
+      - DB_HOST=order-db
+      - DB_PORT=5432
+      - DB_USER=order_user
+      - DB_PASS=Order@123
+      - DB_NAME=order_db
+      - KAFKA_BROKERS=kafka:29092
+    networks:
+      - saga_network
+  order-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: order_user
+      POSTGRES_PASSWORD: Order@123
+      POSTGRES_DB: order_db
+    ports:
+      - "5001:5432"
+    networks:
+      - saga_network
+networks:
+  saga_network:
+    external: true
